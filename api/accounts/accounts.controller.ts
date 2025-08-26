@@ -40,23 +40,16 @@ export const deleteAnAccount = (req: Request, res: Response) => {
   });
 };
 export const updateAnAccount = (req: Request, res: Response) => {
-  const { accountsId } = req.params;
-
-  if (!accountsId) {
-    return res.status(400).json({ message: "try another id" });
+  const { accountId } = req.params;
+  if (!accountId) {
+    return res.status(400);
   }
 
-  const index = accounts.findIndex((a) => a.id == +accountsId);
-
-  if (index === -1) {
-    return res.status(404).json({ message: "Account not found" });
+  const foundAccount = accounts.find((account) => account.id === +accountId);
+  if (foundAccount) {
+    foundAccount.funds = req.body.funds;
+    res.status(204).end();
+  } else {
+    res.status(404).json({ message: "Account not found" });
   }
-
-  accounts[index] = {
-    id: +accountsId,
-    username: req.body.name ?? accounts[index]?.username,
-    funds: req.body.balance ?? accounts[index]?.funds,
-  };
-
-  return res.json(accounts[index]);
 };
